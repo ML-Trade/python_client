@@ -5,5 +5,5 @@ class Client:
 
     def start(self):
         # Continuously recieve on this connection
-        # Pass the data revieced elsewhere (into the Model)
+        # Pass the data recieved elsewhere (into the Model)
         pass
