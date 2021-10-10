@@ -1,6 +1,8 @@
 from typing import Dict, List, Union
 import zmq
 from enum import Enum
+
+from zmq.sugar.context import T
 from Client.Globals import context
 import json
 
@@ -25,6 +27,9 @@ JSONDict = Dict[str, JSONValue]
 class Connection:
     def __init__(self, connectionType: ConnectionType, port: int) -> None:
         self.socket = context.socket(connectionType.value)
+        """ # TODO: NOTE If this is run in WSL, you must connect to the IP shown from:
+        grep -m 1 nameserver /etc/resolv.conf | awk '{print $2}'
+        See https://superuser.com/questions/1535269/how-to-connect-wsl-to-a-windows-localhost """
         self.socket.connect(f"tcp://localhost:{port}")
         self.socket.subscribe('')
         self.port = port
@@ -37,8 +42,11 @@ class Connection:
             message = self.socket.recv_string(flags=zmq.NOBLOCK)
         else:
             message = self.socket.recv_string()
-        return json.loads(message)
-
+        try:
+            return json.loads(message)
+        except json.JSONDecodeError:
+            # This is not JSON
+            return None
 
     def recieveAll(self) -> List[JSONDict]:
         """Gets messages using NO_BLOCK flag until no more can be received.
