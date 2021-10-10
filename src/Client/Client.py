@@ -6,7 +6,7 @@ class Client:
     def __init__(self):
         self.loop = False
         self.subscriber = Connection(ConnectionType.SUB, Globals.PUBLISHER_PORT)
-        print(f"Connected to publisher on port {Globals.PUBLISHER_PORT}")
+        self.api = Connection(ConnectionType.REQ, Globals.API_PORT)
 
     def start(self):
         self.loop = True
@@ -17,5 +17,15 @@ class Client:
                 print("Recieved invalid or no data")
                 continue
             print(f"Putting {result} into model")
+            print(f"Sending Trade to buy at market")
+            buyOrder = {
+                "action": "TRADE",
+                "options": {
+                    "action": "BUY",
+                    "type": "MARKET",
+                    "amount": 1.0
+                }
+            }
+            self.api.send(buyOrder)
             # Get prediction
             # Send recommendation back to MQL

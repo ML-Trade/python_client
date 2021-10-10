@@ -20,6 +20,16 @@ class ConnectionType(Enum):
     XSUB = 10
     STREAM = 11
 
+supportedTypes = [
+    ConnectionType.PUB.value, ConnectionType.SUB.value,
+    ConnectionType.REP.value, ConnectionType.REQ.value
+]
+
+serverConnectionTypes = [
+    ConnectionType.PUB.value,
+    ConnectionType.REP.value
+]
+
 # Typing for a deserialised JSON value
 JSONValue = Union[str, bool, int, float]
 JSONDict = Dict[str, JSONValue]
@@ -27,11 +37,24 @@ JSONDict = Dict[str, JSONValue]
 class Connection:
     def __init__(self, connectionType: ConnectionType, port: int) -> None:
         self.socket = context.socket(connectionType.value)
-        """ # TODO: NOTE If this is run in WSL, you must connect to the IP shown from:
-        grep -m 1 nameserver /etc/resolv.conf | awk '{print $2}'
-        See https://superuser.com/questions/1535269/how-to-connect-wsl-to-a-windows-localhost """
-        self.socket.connect(f"tcp://localhost:{port}")
-        self.socket.subscribe('')
+        
+        if connectionType.value not in supportedTypes:
+            raise Exception(f"We do not support {connectionType.name} connection type")
+
+        if connectionType.value in serverConnectionTypes:
+            self.address = f"tcp://*:{port}"
+            self.socket.bind(self.address)
+            print(f"{connectionType.name} bound to {self.address}")
+        else:
+            """ # TODO: NOTE If this is run in WSL, you must connect to the IP shown from:
+            grep -m 1 nameserver /etc/resolv.conf | awk '{print $2}'
+            See https://superuser.com/questions/1535269/how-to-connect-wsl-to-a-windows-localhost """
+            self.address = f"tcp://localhost:{port}"
+            self.socket.connect(self.address)
+            if (connectionType.value == ConnectionType.SUB.value):
+                self.socket.subscribe('')
+            print(f"{connectionType.name} connected to {self.address}")
+
         self.port = port
      
     
@@ -60,3 +83,6 @@ class Connection:
             else:
                 shouldContinue = False
         return jsonDicts
+
+    def send(self, msg: Dict):
+        self.socket.send_json(msg, flags=zmq.NOBLOCK)
