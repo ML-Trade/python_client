@@ -23,9 +23,19 @@ class Client:
                 "options": {
                     "action": "BUY",
                     "type": "MARKET",
-                    "amount": 1.0
+                    "amount": 0.01
+                }
+            }
+            closeOrder = {
+                "action": "TRADE",
+                "options": {
+                    "action": "CLOSE",
+                    "ticket_id": 1,
                 }
             }
             self.api.send(buyOrder)
+            response = self.api.recieve(no_wait=False)
+            ticket_id = response["ticket_id"]
+            print(f"Ticket {ticket_id} created")
             # Get prediction
             # Send recommendation back to MQL
