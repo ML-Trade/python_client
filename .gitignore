@@ -1,6 +1,11 @@
+## Binaries / current model
+current_model.tar
+
+## Sensitive info
+tokens/
+
 ## Ignore IDE project files
 /.idea
-/.vscode
 
 ###### PYTHON STUFF #######
 # Byte-compiled / optimized / DLL files
