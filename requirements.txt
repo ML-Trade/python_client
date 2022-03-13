@@ -23,7 +23,7 @@ Keras-Preprocessing==1.1.2
 libclang==13.0.0
 Markdown==3.3.6
 MarkupSafe==2.1.0
-mltradeshared @ git+ssh://git@github.com/ML-Trade/ml-trade-shared.git@38d806d5ec06d37b82ce9314d00705a358f309ed
+mltradeshared @ git+ssh://git@github.com/ML-Trade/ml-trade-shared.git@be97330671ba2d38ca9b775a8ff26fc0800f9426
 mypy==0.910
 mypy-extensions==0.4.3
 numpy==1.22.2
